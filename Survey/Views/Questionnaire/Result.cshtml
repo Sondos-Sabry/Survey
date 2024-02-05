@@ -1,0 +1,37 @@
+﻿@model Tuple<Questionnaire, List<int>>
+
+@using Survey // Replace with the actual namespace where ApplicationContext is located
+@using Survey.Data;
+@inject ApplicationContext _context
+
+<h2>Questionnaire Result</h2>
+
+@{
+    var totalPoints = _context.Answers
+                .Where(a => Model.Item2.Contains(a.Id));
+
+}
+
+<p>Total Points: @totalPoints</p>
+
+
+    <h3>Percentage of Each Answer:</h3>
+
+    @foreach (var question in Model.Item1.Questions)
+    {
+        <h4>@question.Body</h4>
+        <ul>
+            @foreach (var answer in question.Answers)
+            {
+                var selectedCount = _context.UserResponses
+                .Count(ur => ur.AnswerId == answer.Id && Model.Item2.Contains(answer.Id));
+                double percentage = (double)selectedCount / Model.Item2.Count * 100;
+
+                <li>
+                    @answer.Text: @percentage.ToString("0.00")%
+                </li>
+            }
+        </ul>
+    }
+
+
